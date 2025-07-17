@@ -1,0 +1,451 @@
+<?php
+// Add to functions.php
+
+// Register Custom Post Type for Products
+function create_product_post_type() {
+    $labels = array(
+        'name'                  => _x('Products', 'Post Type General Name', 'textdomain'),
+        'singular_name'         => _x('Product', 'Post Type Singular Name', 'textdomain'),
+        'menu_name'             => __('Products', 'textdomain'),
+        'name_admin_bar'        => __('Product', 'textdomain'),
+        'archives'              => __('Product Archives', 'textdomain'),
+        'attributes'            => __('Product Attributes', 'textdomain'),
+        'parent_item_colon'     => __('Parent Product:', 'textdomain'),
+        'all_items'             => __('All Products', 'textdomain'),
+        'add_new_item'          => __('Add New Product', 'textdomain'),
+        'add_new'               => __('Add New', 'textdomain'),
+        'new_item'              => __('New Product', 'textdomain'),
+        'edit_item'             => __('Edit Product', 'textdomain'),
+        'update_item'           => __('Update Product', 'textdomain'),
+        'view_item'             => __('View Product', 'textdomain'),
+        'view_items'            => __('View Products', 'textdomain'),
+        'search_items'          => __('Search Product', 'textdomain'),
+        'not_found'             => __('Not found', 'textdomain'),
+        'not_found_in_trash'    => __('Not found in Trash', 'textdomain'),
+        'featured_image'        => __('Featured Image', 'textdomain'),
+        'set_featured_image'    => __('Set featured image', 'textdomain'),
+        'remove_featured_image' => __('Remove featured image', 'textdomain'),
+        'use_featured_image'    => __('Use as featured image', 'textdomain'),
+        'insert_into_item'      => __('Insert into product', 'textdomain'),
+        'uploaded_to_this_item' => __('Uploaded to this product', 'textdomain'),
+        'items_list'            => __('Products list', 'textdomain'),
+        'items_list_navigation' => __('Products list navigation', 'textdomain'),
+        'filter_items_list'     => __('Filter products list', 'textdomain'),
+    );
+    
+    $args = array(
+        'label'                 => __('Product', 'textdomain'),
+        'description'           => __('Product catalog items', 'textdomain'),
+        'labels'                => $labels,
+        'supports'              => array('title', 'editor', 'thumbnail', 'excerpt', 'revisions'),
+        'taxonomies'            => array('product_category', 'product_tag'),
+        'hierarchical'          => false,
+        'public'                => true,
+        'show_ui'               => true,
+        'show_in_menu'          => true,
+        'menu_position'         => 5,
+        'menu_icon'             => 'dashicons-products',
+        'show_in_admin_bar'     => true,
+        'show_in_nav_menus'     => true,
+        'can_export'            => true,
+        'has_archive'           => true,
+        'exclude_from_search'   => false,
+        'publicly_queryable'    => true,
+        'capability_type'       => 'post',
+        'show_in_rest'          => true,
+        'rewrite'               => array('slug' => 'products'),
+    );
+    
+    register_post_type('custom_product', $args);
+}
+add_action('init', 'create_product_post_type', 0);
+
+// Register Custom Taxonomies
+function create_product_taxonomies() {
+    // Product Categories
+    $category_labels = array(
+        'name'                       => _x('Product Categories', 'Taxonomy General Name', 'textdomain'),
+        'singular_name'              => _x('Product Category', 'Taxonomy Singular Name', 'textdomain'),
+        'menu_name'                  => __('Categories', 'textdomain'),
+        'all_items'                  => __('All Categories', 'textdomain'),
+        'parent_item'                => __('Parent Category', 'textdomain'),
+        'parent_item_colon'          => __('Parent Category:', 'textdomain'),
+        'new_item_name'              => __('New Category Name', 'textdomain'),
+        'add_new_item'               => __('Add New Category', 'textdomain'),
+        'edit_item'                  => __('Edit Category', 'textdomain'),
+        'update_item'                => __('Update Category', 'textdomain'),
+        'view_item'                  => __('View Category', 'textdomain'),
+        'separate_items_with_commas' => __('Separate categories with commas', 'textdomain'),
+        'add_or_remove_items'        => __('Add or remove categories', 'textdomain'),
+        'choose_from_most_used'      => __('Choose from the most used', 'textdomain'),
+        'popular_items'              => __('Popular Categories', 'textdomain'),
+        'search_items'               => __('Search Categories', 'textdomain'),
+        'not_found'                  => __('Not Found', 'textdomain'),
+        'no_terms'                   => __('No categories', 'textdomain'),
+        'items_list'                 => __('Categories list', 'textdomain'),
+        'items_list_navigation'      => __('Categories list navigation', 'textdomain'),
+    );
+    
+    $category_args = array(
+        'labels'                     => $category_labels,
+        'hierarchical'               => true,
+        'public'                     => true,
+        'show_ui'                    => true,
+        'show_admin_column'          => true,
+        'show_in_nav_menus'          => true,
+        'show_tagcloud'              => true,
+        'show_in_rest'               => true,
+        'rewrite'                    => array('slug' => 'product-category'),
+    );
+    
+    register_taxonomy('product_category', array('custom_product'), $category_args);
+    
+    // Product Tags
+    $tag_labels = array(
+        'name'                       => _x('Product Tags', 'Taxonomy General Name', 'textdomain'),
+        'singular_name'              => _x('Product Tag', 'Taxonomy Singular Name', 'textdomain'),
+        'menu_name'                  => __('Tags', 'textdomain'),
+        'all_items'                  => __('All Tags', 'textdomain'),
+        'parent_item'                => __('Parent Tag', 'textdomain'),
+        'parent_item_colon'          => __('Parent Tag:', 'textdomain'),
+        'new_item_name'              => __('New Tag Name', 'textdomain'),
+        'add_new_item'               => __('Add New Tag', 'textdomain'),
+        'edit_item'                  => __('Edit Tag', 'textdomain'),
+        'update_item'                => __('Update Tag', 'textdomain'),
+        'view_item'                  => __('View Tag', 'textdomain'),
+        'separate_items_with_commas' => __('Separate tags with commas', 'textdomain'),
+        'add_or_remove_items'        => __('Add or remove tags', 'textdomain'),
+        'choose_from_most_used'      => __('Choose from the most used', 'textdomain'),
+        'popular_items'              => __('Popular Tags', 'textdomain'),
+        'search_items'               => __('Search Tags', 'textdomain'),
+        'not_found'                  => __('Not Found', 'textdomain'),
+        'no_terms'                   => __('No tags', 'textdomain'),
+        'items_list'                 => __('Tags list', 'textdomain'),
+        'items_list_navigation'      => __('Tags list navigation', 'textdomain'),
+    );
+    
+    $tag_args = array(
+        'labels'                     => $tag_labels,
+        'hierarchical'               => false,
+        'public'                     => true,
+        'show_ui'                    => true,
+        'show_admin_column'          => true,
+        'show_in_nav_menus'          => true,
+        'show_tagcloud'              => true,
+        'show_in_rest'               => true,
+        'rewrite'                    => array('slug' => 'product-tag'),
+    );
+    
+    register_taxonomy('product_tag', array('custom_product'), $tag_args);
+}
+add_action('init', 'create_product_taxonomies', 0);
+
+// ACF Field Group Registration (Alternative to GUI)
+function register_product_acf_fields() {
+    if (function_exists('acf_add_local_field_group')) {
+        acf_add_local_field_group(array(
+            'key' => 'group_product_specifications',
+            'title' => 'Product Specifications',
+            'fields' => array(
+                // Build Type
+                array(
+                    'key' => 'field_build_type',
+                    'label' => 'Build Type',
+                    'name' => 'build_type',
+                    'type' => 'select',
+                    'choices' => array(
+                        'recessed' => 'Recessed',
+                        'surface' => 'Surface',
+                        'pendant' => 'Pendant',
+                        'track' => 'Track',
+                    ),
+                    'default_value' => 'recessed',
+                    'ui' => 1,
+                    'ajax' => 1,
+                ),
+                // Dimensions
+                array(
+                    'key' => 'field_dimensions',
+                    'label' => 'Dimensions (mm)',
+                    'name' => 'dimensions',
+                    'type' => 'text',
+                    'placeholder' => '596X596X13,5',
+                    'prepend' => 'mm',
+                ),
+                // Frame Color
+                array(
+                    'key' => 'field_frame_color',
+                    'label' => 'Frame Color',
+                    'name' => 'frame_color',
+                    'type' => 'select',
+                    'choices' => array(
+                        'black' => 'Black',
+                        'white' => 'White',
+                        'silver' => 'Silver',
+                        'bronze' => 'Bronze',
+                        'custom' => 'Custom',
+                    ),
+                    'default_value' => 'black',
+                    'ui' => 1,
+                ),
+                // Optics
+                array(
+                    'key' => 'field_optics',
+                    'label' => 'Optics',
+                    'name' => 'optics',
+                    'type' => 'text',
+                    'placeholder' => 'OP',
+                ),
+                // CRI
+                array(
+                    'key' => 'field_cri',
+                    'label' => 'CRI',
+                    'name' => 'cri',
+                    'type' => 'number',
+                    'min' => 70,
+                    'max' => 100,
+                    'default_value' => 90,
+                    'append' => 'CRI',
+                ),
+                // CCT
+                array(
+                    'key' => 'field_cct',
+                    'label' => 'CCT',
+                    'name' => 'cct',
+                    'type' => 'select',
+                    'choices' => array(
+                        '2700' => '2700K (Warm White)',
+                        '3000' => '3000K (Warm White)',
+                        '4000' => '4000K (Neutral White)',
+                        '5000' => '5000K (Cool White)',
+                        '6500' => '6500K (Daylight)',
+                    ),
+                    'default_value' => '4000',
+                    'ui' => 1,
+                ),
+                // Lumen Output
+                array(
+                    'key' => 'field_lumen_output',
+                    'label' => 'Lumen Output',
+                    'name' => 'lumen_output',
+                    'type' => 'text',
+                    'placeholder' => '3000 - 5500',
+                    'append' => 'lm',
+                ),
+                // Power Supply Unit
+                array(
+                    'key' => 'field_power_supply_unit',
+                    'label' => 'Power Supply Unit',
+                    'name' => 'power_supply_unit',
+                    'type' => 'select',
+                    'choices' => array(
+                        'dali' => 'DALI',
+                        'dimmable' => 'Dimmable',
+                        'non_dimmable' => 'Non-Dimmable',
+                        'emergency' => 'Emergency',
+                    ),
+                    'default_value' => 'dali',
+                    'ui' => 1,
+                ),
+                // Connectivity
+                array(
+                    'key' => 'field_connectivity',
+                    'label' => 'Connectivity',
+                    'name' => 'connectivity',
+                    'type' => 'checkbox',
+                    'choices' => array(
+                        'bluetooth' => 'Bluetooth',
+                        'wifi' => 'WiFi',
+                        'zigbee' => 'Zigbee',
+                        'wired' => 'Wired',
+                    ),
+                    'default_value' => array('bluetooth'),
+                ),
+                // Emergency Kit
+                array(
+                    'key' => 'field_emergency_kit',
+                    'label' => 'Emergency Kit',
+                    'name' => 'emergency_kit',
+                    'type' => 'select',
+                    'choices' => array(
+                        '1_hour' => '1 Hour',
+                        '2_hours' => '2 Hours',
+                        '3_hours' => '3 Hours',
+                        'none' => 'None',
+                    ),
+                    'default_value' => '1_hour',
+                    'ui' => 1,
+                ),
+                // Protection Grade
+                array(
+                    'key' => 'field_protection_grade',
+                    'label' => 'Protection Grade',
+                    'name' => 'protection_grade',
+                    'type' => 'select',
+                    'choices' => array(
+                        'ip20' => 'IP20',
+                        'ip44' => 'IP44',
+                        'ip54' => 'IP54',
+                        'ip65' => 'IP65',
+                        'ip67' => 'IP67',
+                    ),
+                    'default_value' => 'ip54',
+                    'ui' => 1,
+                ),
+                // Accessories
+                array(
+                    'key' => 'field_accessories',
+                    'label' => 'Accessories',
+                    'name' => 'accessories',
+                    'type' => 'checkbox',
+                    'choices' => array(
+                        'cable' => 'Cable',
+                        'adaptor' => 'Adaptor',
+                        'mounting_kit' => 'Mounting Kit',
+                        'remote_control' => 'Remote Control',
+                        'sensor' => 'Sensor',
+                    ),
+                    'default_value' => array('cable', 'adaptor'),
+                ),
+                // Price (for salesman)
+                array(
+                    'key' => 'field_product_price',
+                    'label' => 'Price',
+                    'name' => 'product_price',
+                    'type' => 'number',
+                    'min' => 0,
+                    'step' => 0.01,
+                    'prepend' => '$',
+                ),
+                // Stock Status
+                array(
+                    'key' => 'field_stock_status',
+                    'label' => 'Stock Status',
+                    'name' => 'stock_status',
+                    'type' => 'select',
+                    'choices' => array(
+                        'in_stock' => 'In Stock',
+                        'out_of_stock' => 'Out of Stock',
+                        'on_order' => 'On Order',
+                        'discontinued' => 'Discontinued',
+                    ),
+                    'default_value' => 'in_stock',
+                    'ui' => 1,
+                ),
+                // Product Images Gallery
+                array(
+                    'key' => 'field_product_gallery',
+                    'label' => 'Product Gallery',
+                    'name' => 'product_gallery',
+                    'type' => 'gallery',
+                    'min' => 1,
+                    'max' => 10,
+                    'preview_size' => 'medium',
+                    'library' => 'all',
+                ),
+                // Technical Documentation
+                array(
+                    'key' => 'field_technical_docs',
+                    'label' => 'Technical Documentation',
+                    'name' => 'technical_docs',
+                    'type' => 'file',
+                    'return_format' => 'array',
+                    'library' => 'all',
+                    'mime_types' => 'pdf,doc,docx',
+                ),
+            ),
+            'location' => array(
+                array(
+                    array(
+                        'param' => 'post_type',
+                        'operator' => '==',
+                        'value' => 'custom_product',
+                    ),
+                ),
+            ),
+            'menu_order' => 0,
+            'position' => 'normal',
+            'style' => 'default',
+            'label_placement' => 'top',
+            'instruction_placement' => 'label',
+        ));
+    }
+}
+add_action('acf/init', 'register_product_acf_fields');
+
+// Helper functions for displaying product data
+function get_product_specifications($post_id = null) {
+    if (!$post_id) {
+        global $post;
+        $post_id = $post->ID;
+    }
+    
+    $specs = array();
+    
+    $fields = array(
+        'build_type' => 'Build Type',
+        'dimensions' => 'Dimensions (mm)',
+        'frame_color' => 'Frame Color',
+        'optics' => 'Optics',
+        'cri' => 'CRI',
+        'cct' => 'CCT',
+        'lumen_output' => 'Lumen Output',
+        'power_supply_unit' => 'Power Supply Unit',
+        'connectivity' => 'Connectivity',
+        'emergency_kit' => 'Emergency Kit',
+        'protection_grade' => 'Protection Grade',
+        'accessories' => 'Accessories',
+        'stock_status' => 'Stock Status',
+    );
+    
+    foreach ($fields as $field => $label) {
+        $value = get_field($field, $post_id);
+        if ($value) {
+            $specs[$field] = array(
+                'label' => $label,
+                'value' => $value
+            );
+        }
+    }
+    
+    return $specs;
+}
+
+function display_product_specifications($post_id = null) {
+    $specs = get_product_specifications($post_id);
+    
+    if (empty($specs)) {
+        return '';
+    }
+    
+    $output = '<div class="product-specifications">';
+    $output .= '<h3>Product Specifications</h3>';
+    $output .= '<table class="specs-table">';
+    
+    foreach ($specs as $field => $data) {
+        $output .= '<tr>';
+        $output .= '<th>' . esc_html($data['label']) . '</th>';
+        
+        if (is_array($data['value'])) {
+            $output .= '<td>' . implode(', ', $data['value']) . '</td>';
+        } else {
+            $output .= '<td>' . esc_html($data['value']) . '</td>';
+        }
+        
+        $output .= '</tr>';
+    }
+    
+    $output .= '</table>';
+    $output .= '</div>';
+    
+    return $output;
+}
+
+// Flush rewrite rules on activation
+function flush_rewrite_rules_on_activation() {
+    create_product_post_type();
+    create_product_taxonomies();
+    flush_rewrite_rules();
+}
+register_activation_hook(__FILE__, 'flush_rewrite_rules_on_activation');
+?>
