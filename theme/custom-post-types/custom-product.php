@@ -157,9 +157,58 @@ function create_product_post_type() {
 }
 add_action('init', 'create_product_post_type', 0);
 
+// Register Projects Custom Post Type
+function create_project_post_type() {
+    $labels = array(
+        'name'                  => _x('Projects', 'Post Type General Name', 'textdomain'),
+        'singular_name'         => _x('Project', 'Post Type Singular Name', 'textdomain'),
+        'menu_name'             => __('Projects', 'textdomain'),
+        'name_admin_bar'        => __('Project', 'textdomain'),
+        'archives'              => __('Project Archives', 'textdomain'),
+        'attributes'            => __('Project Attributes', 'textdomain'),
+        'parent_item_colon'     => __('Parent Project:', 'textdomain'),
+        'all_items'             => __('All Projects', 'textdomain'),
+        'add_new_item'          => __('Add New Project', 'textdomain'),
+        'add_new'               => __('Add New', 'textdomain'),
+        'new_item'              => __('New Project', 'textdomain'),
+        'edit_item'             => __('Edit Project', 'textdomain'),
+        'update_item'           => __('Update Project', 'textdomain'),
+        'view_item'             => __('View Project', 'textdomain'),
+        'view_items'            => __('View Projects', 'textdomain'),
+        'search_items'          => __('Search Project', 'textdomain'),
+        'not_found'             => __('Not found', 'textdomain'),
+        'not_found_in_trash'    => __('Not found in Trash', 'textdomain'),
+    );
+    
+    $args = array(
+        'label'                 => __('Project', 'textdomain'),
+        'description'           => __('Project items', 'textdomain'),
+        'labels'                => $labels,
+        'supports'              => array('title', 'editor', 'revisions'),
+        'hierarchical'          => true,
+        'public'                => true,
+        'show_ui'               => true,
+        'show_in_menu'          => true,
+        'menu_position'         => 4,
+        'menu_icon'             => 'dashicons-building',
+        'show_in_admin_bar'     => true,
+        'show_in_nav_menus'     => true,
+        'can_export'            => true,
+        'has_archive'           => true,
+        'exclude_from_search'   => false,
+        'publicly_queryable'    => true,
+        'capability_type'       => 'post',
+        'show_in_rest'          => true,
+        'rewrite'               => array('slug' => 'projects'),
+    );
+    
+    register_post_type('project', $args);
+}
+add_action('init', 'create_project_post_type', 0);
+
 
 // ACF Field Groups Registration
-function register_application_acf_fields() {
+function register_acf_fields() {
     if (function_exists('acf_add_local_field_group')) {
         // Application Fields
         acf_add_local_field_group(array(
@@ -180,14 +229,6 @@ function register_application_acf_fields() {
                     'type' => 'image',
                     'return_format' => 'array',
                     'preview_size' => 'medium',
-                ),
-                array(
-                    'key' => 'field_application_icon',
-                    'label' => 'Application Icon',
-                    'name' => 'application_icon',
-                    'type' => 'image',
-                    'return_format' => 'array',
-                    'preview_size' => 'thumbnail',
                 ),
                 array(
                     'key' => 'field_application_features',
@@ -554,9 +595,88 @@ function register_application_acf_fields() {
             'label_placement' => 'top',
             'instruction_placement' => 'label',
         ));
+
+        // Project Fields
+        acf_add_local_field_group(array(
+            'key' => 'group_project_fields',
+            'title' => 'Project Details',
+            'fields' => [
+                [
+                    'key' => 'field_project_description',
+                    'label' => 'Description',
+                    'name' => 'description',
+                    'type' => 'wysiwyg',
+                ],
+                [
+                    'key' => 'field_project_block_builder',
+                    'label' => 'Block Builder Content',
+                    'name' => 'block_builder_content',
+                    'type' => 'flexible_content',
+                    'layouts' => [
+                        // Define layouts as desired, or leave empty for editor use
+                    ],
+                ],
+                [
+                    'key' => 'field_project_country',
+                    'label' => 'Country',
+                    'name' => 'country',
+                    'type' => 'text',
+                ],
+                [
+                    'key' => 'field_project_architect',
+                    'label' => 'Architect',
+                    'name' => 'architect',
+                    'type' => 'text',
+                ],
+                [
+                    'key' => 'field_project_lighting_design',
+                    'label' => 'Lighting Design',
+                    'name' => 'lighting_design',
+                    'type' => 'text',
+                ],
+                [
+                    'key' => 'field_project_photographer',
+                    'label' => 'Photographer',
+                    'name' => 'photographer',
+                    'type' => 'text',
+                ],
+                [
+                    'key' => 'field_project_applications',
+                    'label' => 'Applications',
+                    'name' => 'applications',
+                    'type' => 'relationship',
+                    'post_type' => ['application'],
+                    'return_format' => 'object',
+                    'multiple' => 1,
+                ],
+                [
+                    'key' => 'field_project_product_series',
+                    'label' => 'Product Series Used',
+                    'name' => 'product_series_used',
+                    'type' => 'relationship',
+                    'post_type' => ['product_series'],
+                    'return_format' => 'object',
+                    'multiple' => 1,
+                ],
+            ],
+            'location' => array(
+                array(
+                    array(
+                        'param' => 'post_type',
+                        'operator' => '==',
+                        'value' => 'project',
+                    ),
+                ),
+            ),
+            'menu_order' => 0,
+            'position' => 'normal',
+            'style' => 'default',
+            'label_placement' => 'top',
+            'instruction_placement' => 'label',
+        ));
     }
 }
-add_action('acf/init', 'register_application_acf_fields');
+add_action('acf/init', 'register_acf_fields');
 
 // Helper functions for hierarchical relationships
 function get_product_hierarchy($product_id = null) {
@@ -607,14 +727,14 @@ function get_series_by_application($application_id) {
             array(
                 'key' => 'series_application',
                 'value' => $application_id,
-                'compare' => '='
+                'compare' => 'LIKE'
             )
         ),
         'posts_per_page' => -1,
         'orderby' => 'title',
         'order' => 'ASC'
     ));
-    
+
     return $series;
 }
 

@@ -225,3 +225,10 @@ require get_template_directory() . '/inc/template-functions.php';
  * Custom post types and taxonomies.
  */
 require get_template_directory() . '/custom-post-types/custom-product.php';
+
+
+function pr($obj) {
+	echo '<pre>';
+	print_r($obj);
+	echo '</pre>';
+}

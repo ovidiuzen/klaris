@@ -9,24 +9,14 @@
 
 ?>
 
-<header id="masthead">
+<header id="masthead" class="border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
 
-	<div>
-		<?php
-		if ( is_front_page() ) :
-			?>
-			<h1><?php bloginfo( 'name' ); ?></h1>
-			<?php
-		else :
-			?>
-			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></p>
-			<?php
-		endif;
-		?>
-	</div>
+	<h1>
+		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="text-4xl font-extrabold"><?php bloginfo( 'name' ); ?></a>
+	</h1>
 
 	<nav id="site-navigation" aria-label="<?php esc_attr_e( 'Main Navigation', 'klaris' ); ?>">
-		<button aria-controls="primary-menu" aria-expanded="false"><?php esc_html_e( 'Primary Menu', 'klaris' ); ?></button>
+		<button aria-controls="primary-menu" aria-expanded="false" class="hidden"><?php esc_html_e( 'Primary Menu', 'klaris' ); ?></button>
 
 		<?php
 		wp_nav_menu(
@@ -34,6 +24,7 @@
 				'theme_location' => 'menu-1',
 				'menu_id'        => 'primary-menu',
 				'items_wrap'     => '<ul id="%1$s" class="%2$s flex gap-4" aria-label="submenu">%3$s</ul>',
+				'menu_class'     => 'font-bold uppercase', // Add a class for
 			)
 		);
 		?>
